@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, ReactNode, useState, useEffect } from "react";
 
 // Interface for todo item
@@ -25,6 +24,15 @@ export interface CountdownTimer {
   createdAt: Date;
 }
 
+// Interface for world clock
+export interface WorldClock {
+  id: string;
+  city: string;
+  timezone: string;
+  label?: string;
+  createdAt: Date;
+}
+
 interface ModuleContextType {
   // Todo list state
   todos: TodoItem[];
@@ -42,6 +50,11 @@ interface ModuleContextType {
   countdowns: CountdownTimer[];
   addCountdown: (title: string, targetDate: Date) => void;
   deleteCountdown: (id: string) => void;
+
+  // World clock state
+  worldClocks: WorldClock[];
+  addWorldClock: (city: string, timezone: string, label?: string) => void;
+  deleteWorldClock: (id: string) => void;
 }
 
 const ModuleContext = createContext<ModuleContextType | undefined>(undefined);
@@ -93,6 +106,15 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
     }));
   });
 
+  // World clock state
+  const [worldClocks, setWorldClocks] = useState<WorldClock[]>(() => {
+    const storedClocks = loadFromStorage<WorldClock[]>("worldClocks", []);
+    return storedClocks.map(clock => ({
+      ...clock,
+      createdAt: new Date(clock.createdAt)
+    }));
+  });
+
   // Save to localStorage whenever state changes
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
@@ -105,6 +127,10 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
   useEffect(() => {
     localStorage.setItem("countdowns", JSON.stringify(countdowns));
   }, [countdowns]);
+
+  useEffect(() => {
+    localStorage.setItem("worldClocks", JSON.stringify(worldClocks));
+  }, [worldClocks]);
 
   // Todo list functions
   const addTodo = (text: string) => {
@@ -163,6 +189,22 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
     setCountdowns(countdowns.filter(countdown => countdown.id !== id));
   };
 
+  // World clock functions
+  const addWorldClock = (city: string, timezone: string, label?: string) => {
+    const newClock: WorldClock = {
+      id: Date.now().toString(),
+      city,
+      timezone,
+      label,
+      createdAt: new Date()
+    };
+    setWorldClocks([...worldClocks, newClock]);
+  };
+
+  const deleteWorldClock = (id: string) => {
+    setWorldClocks(worldClocks.filter(clock => clock.id !== id));
+  };
+
   const value = {
     todos,
     addTodo,
@@ -174,7 +216,10 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
     deleteDiaryEntry,
     countdowns,
     addCountdown,
-    deleteCountdown
+    deleteCountdown,
+    worldClocks,
+    addWorldClock,
+    deleteWorldClock
   };
 
   return (

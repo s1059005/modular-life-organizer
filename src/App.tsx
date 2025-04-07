@@ -8,6 +8,7 @@ import Layout from "./components/Layout/Layout";
 import TodoListPage from "./pages/TodoListPage";
 import DiaryPage from "./pages/DiaryPage";
 import CountdownTimerPage from "./pages/CountdownTimerPage";
+import WorldClockPage from "./pages/WorldClockPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="todo" element={<TodoListPage />} />
             <Route path="diary" element={<DiaryPage />} />
             <Route path="countdown" element={<CountdownTimerPage />} />
+            <Route path="worldclock" element={<WorldClockPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
