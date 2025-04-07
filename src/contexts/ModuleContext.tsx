@@ -33,6 +33,18 @@ export interface WorldClock {
   createdAt: Date;
 }
 
+// Interface for vocabulary item
+export interface VocabularyItem {
+  id: string;
+  word: string;
+  definition: string;
+  example: string;
+  notes?: string;
+  lastReviewed?: Date;
+  createdAt: Date;
+  masteryLevel: number; // 0-5, 0 = not mastered, 5 = fully mastered
+}
+
 interface ModuleContextType {
   // Todo list state
   todos: TodoItem[];
@@ -55,6 +67,13 @@ interface ModuleContextType {
   worldClocks: WorldClock[];
   addWorldClock: (city: string, timezone: string, label?: string) => void;
   deleteWorldClock: (id: string) => void;
+
+  // Vocabulary state
+  vocabularyItems: VocabularyItem[];
+  addVocabularyItem: (word: string, definition: string, example: string, notes?: string) => void;
+  updateVocabularyItem: (id: string, updates: Partial<Omit<VocabularyItem, 'id' | 'createdAt'>>) => void;
+  deleteVocabularyItem: (id: string) => void;
+  updateMasteryLevel: (id: string, masteryLevel: number) => void;
 }
 
 const ModuleContext = createContext<ModuleContextType | undefined>(undefined);
@@ -115,6 +134,16 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
     }));
   });
 
+  // Vocabulary state
+  const [vocabularyItems, setVocabularyItems] = useState<VocabularyItem[]>(() => {
+    const storedVocabulary = loadFromStorage<VocabularyItem[]>("vocabulary", []);
+    return storedVocabulary.map(item => ({
+      ...item,
+      createdAt: new Date(item.createdAt),
+      lastReviewed: item.lastReviewed ? new Date(item.lastReviewed) : undefined
+    }));
+  });
+
   // Save to localStorage whenever state changes
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
@@ -131,6 +160,10 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
   useEffect(() => {
     localStorage.setItem("worldClocks", JSON.stringify(worldClocks));
   }, [worldClocks]);
+
+  useEffect(() => {
+    localStorage.setItem("vocabulary", JSON.stringify(vocabularyItems));
+  }, [vocabularyItems]);
 
   // Todo list functions
   const addTodo = (text: string) => {
@@ -205,6 +238,40 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
     setWorldClocks(worldClocks.filter(clock => clock.id !== id));
   };
 
+  // Vocabulary functions
+  const addVocabularyItem = (word: string, definition: string, example: string, notes?: string) => {
+    const newItem: VocabularyItem = {
+      id: Date.now().toString(),
+      word,
+      definition,
+      example,
+      notes,
+      createdAt: new Date(),
+      masteryLevel: 0
+    };
+    setVocabularyItems([newItem, ...vocabularyItems]);
+  };
+
+  const updateVocabularyItem = (id: string, updates: Partial<Omit<VocabularyItem, 'id' | 'createdAt'>>) => {
+    setVocabularyItems(vocabularyItems.map(item => 
+      item.id === id ? { ...item, ...updates } : item
+    ));
+  };
+
+  const deleteVocabularyItem = (id: string) => {
+    setVocabularyItems(vocabularyItems.filter(item => item.id !== id));
+  };
+
+  const updateMasteryLevel = (id: string, masteryLevel: number) => {
+    setVocabularyItems(vocabularyItems.map(item => 
+      item.id === id ? { 
+        ...item, 
+        masteryLevel, 
+        lastReviewed: new Date() 
+      } : item
+    ));
+  };
+
   const value = {
     todos,
     addTodo,
@@ -219,7 +286,12 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
     deleteCountdown,
     worldClocks,
     addWorldClock,
-    deleteWorldClock
+    deleteWorldClock,
+    vocabularyItems,
+    addVocabularyItem,
+    updateVocabularyItem,
+    deleteVocabularyItem,
+    updateMasteryLevel
   };
 
   return (

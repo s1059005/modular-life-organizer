@@ -1,7 +1,7 @@
 
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { BookOpenText, CheckSquare, Clock, Globe, X, PlusCircle } from "lucide-react";
+import { BookOpenText, CheckSquare, Clock, Globe, X, PlusCircle, BookText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -41,6 +41,12 @@ const navItems: NavItem[] = [
     path: "/worldclock",
     icon: <Globe className="h-5 w-5" />,
     description: "查看世界各地的精確時間"
+  },
+  {
+    title: "英文單字",
+    path: "/vocabulary",
+    icon: <BookText className="h-5 w-5" />,
+    description: "英文單字學習與測驗"
   }
 ];
 
