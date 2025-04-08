@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { BookOpenText, CheckSquare, Clock, Globe, X, PlusCircle, BookText, Save, Volume2, GripVertical } from "lucide-react";
+import { BookOpenText, CheckSquare, Clock, Globe, X, PlusCircle, BookText, Save, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -175,7 +175,10 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
                 }
                 onClick={() => isMobile && setIsOpen(false)}
               >
-                <span className="mr-3">{item.icon}</span>
+                <span className="mr-3">
+                  {/* Make sure we're properly rendering React elements */}
+                  {item.icon}
+                </span>
                 <span>{item.title}</span>
               </NavLink>
             </div>
@@ -187,6 +190,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
         <Button
           variant="outline"
           className="w-full justify-start text-gray-700"
+          type="button"
         >
           <PlusCircle className="mr-2 h-4 w-4" />
           新增模組
