@@ -114,6 +114,7 @@ const TodoItemComponent = ({ todo, onToggle, onDelete }: TodoItemComponentProps)
           className={`flex-shrink-0 h-6 w-6 rounded-full border border-gray-300 flex items-center justify-center
                      ${todo.completed ? 'bg-modulear-primary border-modulear-primary text-white' : 'bg-white'}`}
           onClick={() => onToggle(todo.id)}
+          type="button"
         >
           {todo.completed && <Check className="h-4 w-4" />}
         </button>
@@ -124,6 +125,7 @@ const TodoItemComponent = ({ todo, onToggle, onDelete }: TodoItemComponentProps)
       <button
         className="text-gray-400 hover:text-red-500 transition-colors"
         onClick={() => onDelete(todo.id, todo.text)}
+        type="button"
       >
         <Trash2 className="h-4 w-4" />
       </button>
