@@ -3,12 +3,11 @@ import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Plus, Search, BookText, Check, Volume2 } from "lucide-react";
+import { Plus, Search, BookText, Check } from "lucide-react";
 import { useModuleContext, VocabularyItem } from "@/contexts/ModuleContext";
 import VocabularyList from "./VocabularyList";
 import VocabularyForm from "./VocabularyForm";
 import VocabularyQuiz from "./VocabularyQuiz";
-import { useToast } from "@/hooks/use-toast";
 
 const Vocabulary = () => {
   const { vocabularyItems } = useModuleContext();
@@ -16,50 +15,12 @@ const Vocabulary = () => {
   const [isAddingWord, setIsAddingWord] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItem, setSelectedItem] = useState<VocabularyItem | null>(null);
-  const { toast } = useToast();
 
   const filteredItems = vocabularyItems.filter(
     (item) =>
       item.word.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.definition.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Text-to-speech function
-  const speakWord = (word: string) => {
-    if (!window.speechSynthesis) {
-      toast({
-        title: "語音功能不支援",
-        description: "您的瀏覽器不支持語音合成功能",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Create utterance
-    const utterance = new SpeechSynthesisUtterance(word);
-    utterance.lang = "en-US"; // Set language to English
-    utterance.rate = 0.9; // Slightly slower rate for learning
-    utterance.pitch = 1;
-
-    // Get voices and try to set a good English voice
-    const voices = window.speechSynthesis.getVoices();
-    const englishVoices = voices.filter(voice => 
-      voice.lang.includes('en') && 
-      (voice.name.includes("Female") || voice.name.includes("Google") || voice.name.includes("Samantha"))
-    );
-    
-    if (englishVoices.length > 0) {
-      utterance.voice = englishVoices[0];
-    }
-    
-    // Speak the word
-    window.speechSynthesis.speak(utterance);
-    
-    toast({
-      title: "播放發音",
-      description: `正在播放 "${word}" 的發音`,
-    });
-  };
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -115,7 +76,6 @@ const Vocabulary = () => {
                     setSelectedItem(item);
                     setIsAddingWord(true);
                   }}
-                  onSpeak={speakWord}
                 />
               </TabsContent>
               <TabsContent value="review" className="mt-4">
@@ -126,11 +86,10 @@ const Vocabulary = () => {
                     setSelectedItem(item);
                     setIsAddingWord(true);
                   }}
-                  onSpeak={speakWord}
                 />
               </TabsContent>
               <TabsContent value="quiz" className="mt-4">
-                <VocabularyQuiz onSpeak={speakWord} />
+                <VocabularyQuiz />
               </TabsContent>
             </Tabs>
           )}

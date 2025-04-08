@@ -4,7 +4,7 @@ import { Check, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useModuleContext, TodoItem } from '@/contexts/ModuleContext';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 const TodoList = () => {
   const { todos, addTodo, toggleTodoComplete, deleteTodo } = useModuleContext();
@@ -52,7 +52,7 @@ const TodoList = () => {
         />
         <Button type="submit">
           <Plus className="h-4 w-4 mr-2" />
-          <span>新增</span>
+          新增
         </Button>
       </form>
 
@@ -114,8 +114,6 @@ const TodoItemComponent = ({ todo, onToggle, onDelete }: TodoItemComponentProps)
           className={`flex-shrink-0 h-6 w-6 rounded-full border border-gray-300 flex items-center justify-center
                      ${todo.completed ? 'bg-modulear-primary border-modulear-primary text-white' : 'bg-white'}`}
           onClick={() => onToggle(todo.id)}
-          type="button"
-          aria-label={todo.completed ? "Mark as incomplete" : "Mark as complete"}
         >
           {todo.completed && <Check className="h-4 w-4" />}
         </button>
@@ -126,8 +124,6 @@ const TodoItemComponent = ({ todo, onToggle, onDelete }: TodoItemComponentProps)
       <button
         className="text-gray-400 hover:text-red-500 transition-colors"
         onClick={() => onDelete(todo.id, todo.text)}
-        type="button"
-        aria-label="Delete todo"
       >
         <Trash2 className="h-4 w-4" />
       </button>

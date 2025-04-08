@@ -4,13 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useModuleContext, VocabularyItem } from "@/contexts/ModuleContext";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, Check, X, Volume2 } from "lucide-react";
+import { ArrowRight, Check, X } from "lucide-react";
 
-interface VocabularyQuizProps {
-  onSpeak: (word: string) => void;
-}
-
-const VocabularyQuiz = ({ onSpeak }: VocabularyQuizProps) => {
+const VocabularyQuiz = () => {
   const { vocabularyItems, updateMasteryLevel } = useModuleContext();
   const { toast } = useToast();
   const [quizItems, setQuizItems] = useState<VocabularyItem[]>([]);
@@ -139,40 +135,15 @@ const VocabularyQuiz = ({ onSpeak }: VocabularyQuizProps) => {
       </CardHeader>
       <CardContent className="text-center py-8">
         <div className="mb-6">
-          <div className="flex items-center justify-center gap-2">
-            <h3 className="text-xl font-medium mb-2">
-              {quizMode === "word-to-def" ? currentItem.word : currentItem.definition}
-            </h3>
-            {quizMode === "word-to-def" && (
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="h-8 w-8 p-0" 
-                onClick={() => onSpeak(currentItem.word)}
-              >
-                <Volume2 className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-          
+          <h3 className="text-xl font-medium mb-2">
+            {quizMode === "word-to-def" ? currentItem.word : currentItem.definition}
+          </h3>
           {showAnswer && (
             <div className="mt-4 p-4 bg-muted rounded-md">
               <p className="font-medium">答案:</p>
-              <div className="flex items-center justify-center gap-2 mt-1">
-                <p className="text-lg">
-                  {quizMode === "word-to-def" ? currentItem.definition : currentItem.word}
-                </p>
-                {quizMode === "def-to-word" && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="h-8 w-8 p-0" 
-                    onClick={() => onSpeak(currentItem.word)}
-                  >
-                    <Volume2 className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
+              <p className="text-lg">
+                {quizMode === "word-to-def" ? currentItem.definition : currentItem.word}
+              </p>
               {currentItem.example && (
                 <p className="mt-2 text-sm italic">
                   例句: {currentItem.example}
