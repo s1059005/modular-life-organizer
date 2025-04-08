@@ -200,7 +200,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           type="button"
         >
           <PlusCircle className="mr-2 h-4 w-4" />
-          新增模組
+          <span>新增模組</span>
         </Button>
         <p className="text-xs text-gray-500 mt-4 text-center">
           v1.0.0 | 模組化生活管理
