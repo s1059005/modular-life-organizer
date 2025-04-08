@@ -11,6 +11,7 @@ import CountdownTimerPage from "./pages/CountdownTimerPage";
 import WorldClockPage from "./pages/WorldClockPage";
 import VocabularyPage from "./pages/VocabularyPage";
 import BackupRestorePage from "./pages/BackupRestorePage";
+import StickyNotesPage from "./pages/StickyNotesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,7 +24,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route index element={<TodoListPage />} />
+            <Route index element={<StickyNotesPage />} />
+            <Route path="stickynotes" element={<StickyNotesPage />} />
             <Route path="todo" element={<TodoListPage />} />
             <Route path="diary" element={<DiaryPage />} />
             <Route path="countdown" element={<CountdownTimerPage />} />

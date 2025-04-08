@@ -45,6 +45,14 @@ export interface VocabularyItem {
   masteryLevel: number; // 0-5, 0 = not mastered, 5 = fully mastered
 }
 
+// Interface for sticky note
+export interface StickyNote {
+  id: string;
+  content: string;
+  color: string;
+  createdAt: Date;
+}
+
 interface ModuleContextType {
   // Todo list state
   todos: TodoItem[];
@@ -74,6 +82,12 @@ interface ModuleContextType {
   updateVocabularyItem: (id: string, updates: Partial<Omit<VocabularyItem, 'id' | 'createdAt'>>) => void;
   deleteVocabularyItem: (id: string) => void;
   updateMasteryLevel: (id: string, masteryLevel: number) => void;
+  
+  // Sticky notes state
+  stickyNotes: StickyNote[];
+  addStickyNote: (content: string, color: string) => void;
+  updateStickyNote: (id: string, content: string, color: string) => void;
+  deleteStickyNote: (id: string) => void;
 }
 
 const ModuleContext = createContext<ModuleContextType | undefined>(undefined);
@@ -144,6 +158,15 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
     }));
   });
 
+  // Sticky notes state
+  const [stickyNotes, setStickyNotes] = useState<StickyNote[]>(() => {
+    const storedNotes = loadFromStorage<StickyNote[]>("stickyNotes", []);
+    return storedNotes.map(note => ({
+      ...note,
+      createdAt: new Date(note.createdAt)
+    }));
+  });
+
   // Save to localStorage whenever state changes
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
@@ -164,6 +187,10 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
   useEffect(() => {
     localStorage.setItem("vocabulary", JSON.stringify(vocabularyItems));
   }, [vocabularyItems]);
+
+  useEffect(() => {
+    localStorage.setItem("stickyNotes", JSON.stringify(stickyNotes));
+  }, [stickyNotes]);
 
   // Todo list functions
   const addTodo = (text: string) => {
@@ -272,6 +299,27 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
     ));
   };
 
+  // Sticky notes functions
+  const addStickyNote = (content: string, color: string) => {
+    const newNote: StickyNote = {
+      id: Date.now().toString(),
+      content,
+      color,
+      createdAt: new Date()
+    };
+    setStickyNotes([newNote, ...stickyNotes]);
+  };
+
+  const updateStickyNote = (id: string, content: string, color: string) => {
+    setStickyNotes(stickyNotes.map(note => 
+      note.id === id ? { ...note, content, color } : note
+    ));
+  };
+
+  const deleteStickyNote = (id: string) => {
+    setStickyNotes(stickyNotes.filter(note => note.id !== id));
+  };
+
   const value = {
     todos,
     addTodo,
@@ -291,7 +339,11 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
     addVocabularyItem,
     updateVocabularyItem,
     deleteVocabularyItem,
-    updateMasteryLevel
+    updateMasteryLevel,
+    stickyNotes,
+    addStickyNote,
+    updateStickyNote,
+    deleteStickyNote
   };
 
   return (

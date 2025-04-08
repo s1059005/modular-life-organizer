@@ -1,7 +1,7 @@
 
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { BookOpenText, CheckSquare, Clock, Globe, X, PlusCircle, BookText, Save } from "lucide-react";
+import { BookOpenText, CheckSquare, Clock, Globe, X, PlusCircle, BookText, Save, StickyNote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -18,6 +18,12 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
+  {
+    title: "便利貼",
+    path: "/stickynotes",
+    icon: <StickyNote className="h-5 w-5" />,
+    description: "創建和管理您的便利貼"
+  },
   {
     title: "待辦事項",
     path: "/todo",
