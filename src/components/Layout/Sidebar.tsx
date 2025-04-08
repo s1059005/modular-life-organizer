@@ -80,7 +80,12 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   useEffect(() => {
     const savedNavItems = localStorage.getItem('navItems');
     if (savedNavItems) {
-      setNavItems(JSON.parse(savedNavItems));
+      try {
+        setNavItems(JSON.parse(savedNavItems));
+      } catch (e) {
+        console.error("Error parsing saved nav items:", e);
+        setNavItems(defaultNavItems);
+      }
     } else {
       setNavItems(defaultNavItems);
     }
@@ -105,6 +110,8 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     const updatedNavItems = [...navItems];
     const dragItemIndex = updatedNavItems.findIndex(item => item.id === dragItem.id);
     const targetItemIndex = updatedNavItems.findIndex(item => item.id === targetItem.id);
+
+    if (dragItemIndex === -1 || targetItemIndex === -1) return;
 
     // Remove drag item
     const [reorderedItem] = updatedNavItems.splice(dragItemIndex, 1);
