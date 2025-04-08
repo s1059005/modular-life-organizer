@@ -143,6 +143,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
             size="icon"
             onClick={() => setIsOpen(false)}
             className="md:hidden"
+            type="button"
           >
             <X className="h-5 w-5" />
           </Button>
@@ -176,7 +177,6 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
                 onClick={() => isMobile && setIsOpen(false)}
               >
                 <span className="mr-3">
-                  {/* Make sure we're properly rendering React elements */}
                   {item.icon}
                 </span>
                 <span>{item.title}</span>
