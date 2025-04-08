@@ -37,8 +37,14 @@ const Vocabulary = () => {
         <CardContent>
           {isAddingWord ? (
             <VocabularyForm 
-              onCancel={() => setIsAddingWord(false)} 
-              onComplete={() => setIsAddingWord(false)}
+              onCancel={() => {
+                setIsAddingWord(false);
+                setSelectedItem(null);
+              }} 
+              onComplete={() => {
+                setIsAddingWord(false);
+                setSelectedItem(null);
+              }}
               item={selectedItem}
             />
           ) : (

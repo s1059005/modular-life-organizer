@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useModuleContext, VocabularyItem } from "@/contexts/ModuleContext";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, Check, X } from "lucide-react";
+import { ArrowRight, Check, X, Volume2 } from "lucide-react";
 
 const VocabularyQuiz = () => {
   const { vocabularyItems, updateMasteryLevel } = useModuleContext();
@@ -16,6 +16,7 @@ const VocabularyQuiz = () => {
   const [quizFinished, setQuizFinished] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [quizMode, setQuizMode] = useState<"word-to-def" | "def-to-word">("word-to-def");
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // 準備測驗
   const prepareQuiz = (mode: "word-to-def" | "def-to-word") => {
@@ -67,6 +68,14 @@ const VocabularyQuiz = () => {
     } else {
       setQuizFinished(true);
     }
+  };
+
+  const playWordAudio = (word: string) => {
+    setIsPlaying(true);
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = 'en-US';
+    utterance.onend = () => setIsPlaying(false);
+    speechSynthesis.speak(utterance);
   };
 
   if (!quizStarted) {
@@ -135,15 +144,45 @@ const VocabularyQuiz = () => {
       </CardHeader>
       <CardContent className="text-center py-8">
         <div className="mb-6">
-          <h3 className="text-xl font-medium mb-2">
-            {quizMode === "word-to-def" ? currentItem.word : currentItem.definition}
-          </h3>
+          <div className="flex items-center justify-center mb-2">
+            <h3 className="text-xl font-medium">
+              {quizMode === "word-to-def" ? currentItem.word : currentItem.definition}
+            </h3>
+            {quizMode === "word-to-def" && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="ml-2"
+                onClick={() => playWordAudio(currentItem.word)}
+                disabled={isPlaying}
+              >
+                <Volume2 className={`h-4 w-4 ${isPlaying ? 'text-primary animate-pulse' : ''}`} />
+                <span className="sr-only">播放發音</span>
+              </Button>
+            )}
+          </div>
           {showAnswer && (
             <div className="mt-4 p-4 bg-muted rounded-md">
-              <p className="font-medium">答案:</p>
-              <p className="text-lg">
-                {quizMode === "word-to-def" ? currentItem.definition : currentItem.word}
-              </p>
+              <div className="font-medium mb-1">答案:</div>
+              <div className="text-lg flex items-center justify-center">
+                {quizMode === "word-to-def" ? (
+                  currentItem.definition
+                ) : (
+                  <>
+                    {currentItem.word}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="ml-2"
+                      onClick={() => playWordAudio(currentItem.word)}
+                      disabled={isPlaying}
+                    >
+                      <Volume2 className={`h-4 w-4 ${isPlaying ? 'text-primary animate-pulse' : ''}`} />
+                      <span className="sr-only">播放發音</span>
+                    </Button>
+                  </>
+                )}
+              </div>
               {currentItem.example && (
                 <p className="mt-2 text-sm italic">
                   例句: {currentItem.example}

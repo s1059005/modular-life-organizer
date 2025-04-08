@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useModuleContext, VocabularyItem } from "@/contexts/ModuleContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Eye, EyeOff, Star } from "lucide-react";
+import { Edit, Trash2, Eye, EyeOff, Star, Volume2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +21,7 @@ const VocabularyList = ({ items, reviewMode = false, onEdit }: VocabularyListPro
   const [selectedItem, setSelectedItem] = useState<VocabularyItem | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDefinition, setShowDefinition] = useState<Record<string, boolean>>({});
+  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
 
   const handleDeleteConfirm = () => {
     if (selectedItem) {
@@ -47,6 +48,14 @@ const VocabularyList = ({ items, reviewMode = false, onEdit }: VocabularyListPro
       title: "熟練度已更新",
       description: `單字熟練度已更新為 ${level}`,
     });
+  };
+
+  const playWordAudio = (word: string) => {
+    setPlayingAudio(word);
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = 'en-US';
+    utterance.onend = () => setPlayingAudio(null);
+    speechSynthesis.speak(utterance);
   };
 
   const getMasteryLabel = (level: number) => {
@@ -82,7 +91,19 @@ const VocabularyList = ({ items, reviewMode = false, onEdit }: VocabularyListPro
             <Card key={item.id} className="overflow-hidden">
               <CardContent className="p-0">
                 <div className="p-4 bg-muted/30 flex justify-between items-center">
-                  <h3 className="text-lg font-semibold">{item.word}</h3>
+                  <div className="flex items-center">
+                    <h3 className="text-lg font-semibold">{item.word}</h3>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="ml-2"
+                      onClick={() => playWordAudio(item.word)}
+                      disabled={playingAudio === item.word}
+                    >
+                      <Volume2 className={`h-4 w-4 ${playingAudio === item.word ? 'text-primary animate-pulse' : ''}`} />
+                      <span className="sr-only">播放發音</span>
+                    </Button>
+                  </div>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -136,7 +157,21 @@ const VocabularyList = ({ items, reviewMode = false, onEdit }: VocabularyListPro
           <TableBody>
             {items.map((item) => (
               <TableRow key={item.id}>
-                <TableCell className="font-medium">{item.word}</TableCell>
+                <TableCell className="font-medium">
+                  <div className="flex items-center">
+                    {item.word}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="ml-2"
+                      onClick={() => playWordAudio(item.word)}
+                      disabled={playingAudio === item.word}
+                    >
+                      <Volume2 className={`h-4 w-4 ${playingAudio === item.word ? 'text-primary animate-pulse' : ''}`} />
+                      <span className="sr-only">播放發音</span>
+                    </Button>
+                  </div>
+                </TableCell>
                 <TableCell>{item.definition}</TableCell>
                 <TableCell>
                   <div className="flex items-center">
