@@ -19,7 +19,6 @@ const BackupRestore = () => {
       countdowns: localStorage.getItem('countdowns'),
       worldClocks: localStorage.getItem('worldClocks'),
       vocabulary: localStorage.getItem('vocabulary'),
-      stickyNotes: localStorage.getItem('stickyNotes'),
       version: '1.0.0',
       timestamp: new Date().toISOString()
     };
@@ -77,7 +76,6 @@ const BackupRestore = () => {
         if (backupData.countdowns) localStorage.setItem('countdowns', backupData.countdowns);
         if (backupData.worldClocks) localStorage.setItem('worldClocks', backupData.worldClocks);
         if (backupData.vocabulary) localStorage.setItem('vocabulary', backupData.vocabulary);
-        if (backupData.stickyNotes) localStorage.setItem('stickyNotes', backupData.stickyNotes);
         
         toast({
           title: "恢復成功",
