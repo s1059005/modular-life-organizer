@@ -52,7 +52,7 @@ const TodoList = () => {
         />
         <Button type="submit">
           <Plus className="h-4 w-4 mr-2" />
-          新增
+          <span>新增</span>
         </Button>
       </form>
 
