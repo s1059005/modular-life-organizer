@@ -115,6 +115,7 @@ const TodoItemComponent = ({ todo, onToggle, onDelete }: TodoItemComponentProps)
                      ${todo.completed ? 'bg-modulear-primary border-modulear-primary text-white' : 'bg-white'}`}
           onClick={() => onToggle(todo.id)}
           type="button"
+          aria-label={todo.completed ? "Mark as incomplete" : "Mark as complete"}
         >
           {todo.completed && <Check className="h-4 w-4" />}
         </button>
@@ -126,6 +127,7 @@ const TodoItemComponent = ({ todo, onToggle, onDelete }: TodoItemComponentProps)
         className="text-gray-400 hover:text-red-500 transition-colors"
         onClick={() => onDelete(todo.id, todo.text)}
         type="button"
+        aria-label="Delete todo"
       >
         <Trash2 className="h-4 w-4" />
       </button>
