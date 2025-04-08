@@ -1,7 +1,7 @@
 
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { BookOpenText, CheckSquare, Clock, Globe, X, PlusCircle, BookText } from "lucide-react";
+import { BookOpenText, CheckSquare, Clock, Globe, X, PlusCircle, BookText, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -47,6 +47,12 @@ const navItems: NavItem[] = [
     path: "/vocabulary",
     icon: <BookText className="h-5 w-5" />,
     description: "英文單字學習與測驗"
+  },
+  {
+    title: "備份還原",
+    path: "/backup",
+    icon: <Save className="h-5 w-5" />,
+    description: "備份和恢復您的資料"
   }
 ];
 
