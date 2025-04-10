@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Edit, Save, X, ArrowsMaximize } from "lucide-react";
+import { Plus, Trash2, Edit, Save, X, Maximize2 } from "lucide-react";
 import { useModuleContext, StickyNote } from "@/contexts/ModuleContext";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
@@ -199,7 +199,7 @@ const StickyNotes = () => {
                         className="p-1 rounded-full bg-white bg-opacity-50 hover:bg-opacity-70 transition-colors"
                         title="調整尺寸"
                       >
-                        <ArrowsMaximize size={16} />
+                        <Maximize2 size={16} />
                       </button>
                     </PopoverTrigger>
                     <PopoverContent className="w-60">
