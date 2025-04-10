@@ -2,9 +2,12 @@
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Edit, Save, X } from "lucide-react";
+import { Plus, Trash2, Edit, Save, X, ArrowsMaximize } from "lucide-react";
 import { useModuleContext, StickyNote } from "@/contexts/ModuleContext";
 import { Textarea } from "@/components/ui/textarea";
+import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const colorOptions = [
   { name: "黃色", value: "bg-yellow-200" },
@@ -14,28 +17,38 @@ const colorOptions = [
   { name: "紫色", value: "bg-purple-200" },
 ];
 
+// Default sizes
+const DEFAULT_WIDTH = 250;  // in pixels
+const DEFAULT_HEIGHT = 200; // in pixels
+
 const StickyNotes = () => {
   const { stickyNotes, addStickyNote, updateStickyNote, deleteStickyNote } = useModuleContext();
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [noteContent, setNoteContent] = useState("");
   const [selectedColor, setSelectedColor] = useState(colorOptions[0].value);
+  const [noteWidth, setNoteWidth] = useState(DEFAULT_WIDTH);
+  const [noteHeight, setNoteHeight] = useState(DEFAULT_HEIGHT);
 
   const handleAddNote = () => {
     if (noteContent.trim()) {
-      addStickyNote(noteContent, selectedColor);
+      addStickyNote(noteContent, selectedColor, noteWidth, noteHeight);
       setNoteContent("");
       setIsAdding(false);
       setSelectedColor(colorOptions[0].value);
+      setNoteWidth(DEFAULT_WIDTH);
+      setNoteHeight(DEFAULT_HEIGHT);
     }
   };
 
   const handleUpdateNote = (id: string) => {
     if (noteContent.trim()) {
-      updateStickyNote(id, noteContent, selectedColor);
+      updateStickyNote(id, noteContent, selectedColor, noteWidth, noteHeight);
       setNoteContent("");
       setEditingId(null);
       setSelectedColor(colorOptions[0].value);
+      setNoteWidth(DEFAULT_WIDTH);
+      setNoteHeight(DEFAULT_HEIGHT);
     }
   };
 
@@ -43,12 +56,16 @@ const StickyNotes = () => {
     setEditingId(note.id);
     setNoteContent(note.content);
     setSelectedColor(note.color);
+    setNoteWidth(note.width || DEFAULT_WIDTH);
+    setNoteHeight(note.height || DEFAULT_HEIGHT);
   };
 
   const cancelEditing = () => {
     setEditingId(null);
     setNoteContent("");
     setSelectedColor(colorOptions[0].value);
+    setNoteWidth(DEFAULT_WIDTH);
+    setNoteHeight(DEFAULT_HEIGHT);
   };
 
   return (
@@ -75,16 +92,53 @@ const StickyNotes = () => {
                 placeholder="輸入便利貼內容..."
                 className="min-h-[120px] mb-3"
               />
-              <div className="flex flex-wrap gap-2 mb-4">
-                {colorOptions.map((color) => (
-                  <button
-                    key={color.value}
-                    onClick={() => setSelectedColor(color.value)}
-                    className={`w-8 h-8 rounded-full ${color.value} border ${selectedColor === color.value ? "ring-2 ring-offset-2 ring-black" : ""}`}
-                    title={color.name}
-                  />
-                ))}
+              
+              {/* Color options */}
+              <div className="space-y-3 mb-4">
+                <h4 className="text-sm font-medium">顏色</h4>
+                <div className="flex flex-wrap gap-2">
+                  {colorOptions.map((color) => (
+                    <button
+                      key={color.value}
+                      onClick={() => setSelectedColor(color.value)}
+                      className={`w-8 h-8 rounded-full ${color.value} border ${selectedColor === color.value ? "ring-2 ring-offset-2 ring-black" : ""}`}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
               </div>
+              
+              {/* Size controls */}
+              <div className="space-y-3 mb-4">
+                <h4 className="text-sm font-medium">尺寸設定</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="width" className="text-sm">寬度 (像素): {noteWidth}</label>
+                    <Slider
+                      id="width"
+                      value={[noteWidth]}
+                      min={150}
+                      max={400}
+                      step={10}
+                      onValueChange={(value) => setNoteWidth(value[0])}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="height" className="text-sm">高度 (像素): {noteHeight}</label>
+                    <Slider
+                      id="height"
+                      value={[noteHeight]}
+                      min={100}
+                      max={400}
+                      step={10}
+                      onValueChange={(value) => setNoteHeight(value[0])}
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+              </div>
+              
               <div className="flex space-x-2">
                 {isAdding ? (
                   <>
@@ -117,23 +171,79 @@ const StickyNotes = () => {
             {stickyNotes.map((note) => (
               <div
                 key={note.id}
-                className={`${note.color} p-4 rounded-lg shadow-md relative min-h-[150px] flex flex-col break-words`}
+                className={`${note.color} p-4 rounded-lg shadow-md relative flex flex-col break-words`}
+                style={{ 
+                  width: `${note.width || DEFAULT_WIDTH}px`, 
+                  height: `${note.height || DEFAULT_HEIGHT}px`,
+                  minHeight: '100px'
+                }}
               >
                 <div className="absolute top-2 right-2 flex space-x-1">
                   <button
                     onClick={() => startEditing(note)}
                     className="p-1 rounded-full bg-white bg-opacity-50 hover:bg-opacity-70 transition-colors"
+                    title="編輯"
                   >
                     <Edit size={16} />
                   </button>
                   <button
                     onClick={() => deleteStickyNote(note.id)}
                     className="p-1 rounded-full bg-white bg-opacity-50 hover:bg-opacity-70 transition-colors"
+                    title="刪除"
                   >
                     <Trash2 size={16} />
                   </button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        className="p-1 rounded-full bg-white bg-opacity-50 hover:bg-opacity-70 transition-colors"
+                        title="調整尺寸"
+                      >
+                        <ArrowsMaximize size={16} />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-60">
+                      <div className="space-y-3">
+                        <h4 className="text-sm font-semibold">調整尺寸</h4>
+                        <div className="space-y-2">
+                          <label htmlFor={`width-${note.id}`} className="text-xs">寬度: {note.width || DEFAULT_WIDTH}px</label>
+                          <Slider
+                            id={`width-${note.id}`}
+                            value={[note.width || DEFAULT_WIDTH]}
+                            min={150}
+                            max={400}
+                            step={10}
+                            onValueChange={(value) => updateStickyNote(
+                              note.id, 
+                              note.content, 
+                              note.color, 
+                              value[0], 
+                              note.height || DEFAULT_HEIGHT
+                            )}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label htmlFor={`height-${note.id}`} className="text-xs">高度: {note.height || DEFAULT_HEIGHT}px</label>
+                          <Slider
+                            id={`height-${note.id}`}
+                            value={[note.height || DEFAULT_HEIGHT]}
+                            min={100}
+                            max={400}
+                            step={10}
+                            onValueChange={(value) => updateStickyNote(
+                              note.id, 
+                              note.content, 
+                              note.color, 
+                              note.width || DEFAULT_WIDTH, 
+                              value[0]
+                            )}
+                          />
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
-                <p className="whitespace-pre-wrap pt-6">{note.content}</p>
+                <p className="whitespace-pre-wrap pt-6 overflow-auto">{note.content}</p>
                 <div className="mt-auto pt-2 text-xs text-gray-600">
                   {new Date(note.createdAt).toLocaleDateString()}
                 </div>

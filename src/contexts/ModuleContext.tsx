@@ -51,6 +51,8 @@ export interface StickyNote {
   content: string;
   color: string;
   createdAt: Date;
+  width?: number; // Optional width in pixels
+  height?: number; // Optional height in pixels
 }
 
 interface ModuleContextType {
@@ -85,8 +87,8 @@ interface ModuleContextType {
   
   // Sticky notes state
   stickyNotes: StickyNote[];
-  addStickyNote: (content: string, color: string) => void;
-  updateStickyNote: (id: string, content: string, color: string) => void;
+  addStickyNote: (content: string, color: string, width?: number, height?: number) => void;
+  updateStickyNote: (id: string, content: string, color: string, width?: number, height?: number) => void;
   deleteStickyNote: (id: string) => void;
 }
 
@@ -300,19 +302,21 @@ export const ModuleProvider = ({ children }: ModuleProviderProps) => {
   };
 
   // Sticky notes functions
-  const addStickyNote = (content: string, color: string) => {
+  const addStickyNote = (content: string, color: string, width?: number, height?: number) => {
     const newNote: StickyNote = {
       id: Date.now().toString(),
       content,
       color,
-      createdAt: new Date()
+      createdAt: new Date(),
+      width,
+      height
     };
     setStickyNotes([newNote, ...stickyNotes]);
   };
 
-  const updateStickyNote = (id: string, content: string, color: string) => {
+  const updateStickyNote = (id: string, content: string, color: string, width?: number, height?: number) => {
     setStickyNotes(stickyNotes.map(note => 
-      note.id === id ? { ...note, content, color } : note
+      note.id === id ? { ...note, content, color, width, height } : note
     ));
   };
 
