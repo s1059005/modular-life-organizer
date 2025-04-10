@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,9 +16,8 @@ const colorOptions = [
   { name: "紫色", value: "bg-purple-200" },
 ];
 
-// Default sizes
-const DEFAULT_WIDTH = 250;  // in pixels
-const DEFAULT_HEIGHT = 200; // in pixels
+const DEFAULT_WIDTH = 300;  // in pixels
+const DEFAULT_HEIGHT = 300; // in pixels
 
 const StickyNotes = () => {
   const { stickyNotes, addStickyNote, updateStickyNote, deleteStickyNote } = useModuleContext();
@@ -93,7 +91,6 @@ const StickyNotes = () => {
                 className="min-h-[120px] mb-3"
               />
               
-              {/* Color options */}
               <div className="space-y-3 mb-4">
                 <h4 className="text-sm font-medium">顏色</h4>
                 <div className="flex flex-wrap gap-2">
@@ -108,7 +105,6 @@ const StickyNotes = () => {
                 </div>
               </div>
               
-              {/* Size controls */}
               <div className="space-y-3 mb-4">
                 <h4 className="text-sm font-medium">尺寸設定</h4>
                 <div className="grid grid-cols-2 gap-4">
@@ -118,7 +114,7 @@ const StickyNotes = () => {
                       id="width"
                       value={[noteWidth]}
                       min={150}
-                      max={400}
+                      max={500}
                       step={10}
                       onValueChange={(value) => setNoteWidth(value[0])}
                       className="mt-1"
@@ -211,7 +207,7 @@ const StickyNotes = () => {
                             id={`width-${note.id}`}
                             value={[note.width || DEFAULT_WIDTH]}
                             min={150}
-                            max={400}
+                            max={500}
                             step={10}
                             onValueChange={(value) => updateStickyNote(
                               note.id, 
