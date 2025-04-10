@@ -65,6 +65,7 @@ const navItems: NavItem[] = [
 const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   const isMobile = useIsMobile();
   
+  // Apply transition classes based on isOpen state
   const sidebarClasses = `
     fixed top-0 left-0 z-40 h-screen
     ${isOpen ? "translate-x-0" : "-translate-x-full"}
@@ -73,58 +74,79 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     w-64 p-4 flex flex-col
   `;
 
+  // Handle closing the sidebar when clicking a link on mobile
+  const handleNavLinkClick = () => {
+    if (isMobile) {
+      setIsOpen(false);
+    }
+  };
+
+  if (!isOpen && !isMobile) {
+    return null;
+  }
+
   return (
-    <aside className={sidebarClasses}>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-modulear-primary">模組化生活管理</h1>
-        {isMobile && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsOpen(false)}
-            className="md:hidden"
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        )}
-      </div>
-
-      <div className="space-y-1">
-        <p className="text-xs text-gray-500 mb-2 px-3">功能模組</p>
-        <nav className="space-y-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `flex items-center px-3 py-2 rounded-md transition-colors ${
-                  isActive
-                    ? "bg-modulear-accent text-modulear-primary font-medium"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`
-              }
-              onClick={() => isMobile && setIsOpen(false)}
+    <>
+      {/* Overlay for mobile when sidebar is open */}
+      {isMobile && isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={() => setIsOpen(false)}
+        ></div>
+      )}
+      
+      <aside className={sidebarClasses}>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-xl font-bold text-modulear-primary">模組化生活管理</h1>
+          {isOpen && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(false)}
+              className="md:hidden"
             >
-              <span className="mr-3">{item.icon}</span>
-              <span>{item.title}</span>
-            </NavLink>
-          ))}
-        </nav>
-      </div>
+              <X className="h-5 w-5" />
+            </Button>
+          )}
+        </div>
 
-      <div className="mt-auto pt-4 border-t border-gray-200">
-        <Button
-          variant="outline"
-          className="w-full justify-start text-gray-700"
-        >
-          <PlusCircle className="mr-2 h-4 w-4" />
-          新增模組
-        </Button>
-        <p className="text-xs text-gray-500 mt-4 text-center">
-          v1.0.0 | 模組化生活管理
-        </p>
-      </div>
-    </aside>
+        <div className="space-y-1">
+          <p className="text-xs text-gray-500 mb-2 px-3">功能模組</p>
+          <nav className="space-y-1">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) =>
+                  `flex items-center px-3 py-2 rounded-md transition-colors ${
+                    isActive
+                      ? "bg-modulear-accent text-modulear-primary font-medium"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`
+                }
+                onClick={handleNavLinkClick}
+              >
+                <span className="mr-3">{item.icon}</span>
+                <span>{item.title}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+
+        <div className="mt-auto pt-4 border-t border-gray-200">
+          <Button
+            variant="outline"
+            className="w-full justify-start text-gray-700"
+          >
+            <PlusCircle className="mr-2 h-4 w-4" />
+            新增模組
+          </Button>
+          <p className="text-xs text-gray-500 mt-4 text-center">
+            v1.0.0 | 模組化生活管理
+          </p>
+        </div>
+      </aside>
+    </>
   );
 };
 
