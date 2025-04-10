@@ -1,7 +1,7 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { BookOpenText, CheckSquare, Clock, Globe, X, PlusCircle, BookText, Save, StickyNote } from "lucide-react";
+import { BookOpenText, CheckSquare, Clock, Globe, X, PlusCircle, BookText, Save, StickyNote, EyeOff, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -11,6 +11,7 @@ interface SidebarProps {
 }
 
 interface NavItem {
+  id: string;
   title: string;
   path: string;
   icon: React.ReactNode;
@@ -19,42 +20,49 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
+    id: "stickynotes",
     title: "便利貼",
     path: "/stickynotes",
     icon: <StickyNote className="h-5 w-5" />,
     description: "創建和管理您的便利貼"
   },
   {
+    id: "todo",
     title: "待辦事項",
     path: "/todo",
     icon: <CheckSquare className="h-5 w-5" />,
     description: "管理您的日常任務和待辦事項"
   },
   {
+    id: "diary",
     title: "日記",
     path: "/diary",
     icon: <BookOpenText className="h-5 w-5" />,
     description: "記錄您的日常思想和經歷"
   },
   {
+    id: "countdown",
     title: "倒數計時器",
     path: "/countdown",
     icon: <Clock className="h-5 w-5" />,
     description: "為重要事件設置倒數計時"
   },
   {
+    id: "worldclock",
     title: "全球時鐘",
     path: "/worldclock",
     icon: <Globe className="h-5 w-5" />,
     description: "查看世界各地的精確時間"
   },
   {
+    id: "vocabulary",
     title: "英文單字",
     path: "/vocabulary",
     icon: <BookText className="h-5 w-5" />,
     description: "英文單字學習與測驗"
   },
   {
+    id: "backup",
     title: "備份還原",
     path: "/backup",
     icon: <Save className="h-5 w-5" />,
@@ -62,8 +70,34 @@ const navItems: NavItem[] = [
   }
 ];
 
+const HIDDEN_MODULES_KEY = "hiddenModules";
+
 const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   const isMobile = useIsMobile();
+  const [hiddenModules, setHiddenModules] = useState<string[]>([]);
+  
+  useEffect(() => {
+    // Load hidden modules from localStorage on mount
+    const savedHiddenModules = localStorage.getItem(HIDDEN_MODULES_KEY);
+    if (savedHiddenModules) {
+      setHiddenModules(JSON.parse(savedHiddenModules));
+    }
+  }, []);
+
+  // Save to localStorage whenever hiddenModules changes
+  useEffect(() => {
+    localStorage.setItem(HIDDEN_MODULES_KEY, JSON.stringify(hiddenModules));
+  }, [hiddenModules]);
+
+  const toggleModuleVisibility = (id: string) => {
+    setHiddenModules(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(item => item !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
   
   // Apply transition classes based on isOpen state
   const sidebarClasses = `
@@ -84,6 +118,8 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   if (!isOpen && !isMobile) {
     return null;
   }
+
+  const visibleNavItems = navItems.filter(item => !hiddenModules.includes(item.id));
 
   return (
     <>
@@ -113,25 +149,58 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
         <div className="space-y-1">
           <p className="text-xs text-gray-500 mb-2 px-3">功能模組</p>
           <nav className="space-y-1">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center px-3 py-2 rounded-md transition-colors ${
-                    isActive
-                      ? "bg-modulear-accent text-modulear-primary font-medium"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`
-                }
-                onClick={handleNavLinkClick}
-              >
-                <span className="mr-3">{item.icon}</span>
-                <span>{item.title}</span>
-              </NavLink>
+            {visibleNavItems.map((item) => (
+              <div key={item.id} className="relative group">
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex items-center px-3 py-2 rounded-md transition-colors ${
+                      isActive
+                        ? "bg-modulear-accent text-modulear-primary font-medium"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`
+                  }
+                  onClick={handleNavLinkClick}
+                >
+                  <span className="mr-3">{item.icon}</span>
+                  <span>{item.title}</span>
+                </NavLink>
+                <button 
+                  className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => toggleModuleVisibility(item.id)}
+                  title="隱藏此模組"
+                >
+                  <EyeOff className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+                </button>
+              </div>
             ))}
           </nav>
         </div>
+
+        {hiddenModules.length > 0 && (
+          <div className="mt-4 border-t border-gray-200 pt-4">
+            <p className="text-xs text-gray-500 mb-2 px-3">隱藏的模組</p>
+            <nav className="space-y-1">
+              {navItems
+                .filter(item => hiddenModules.includes(item.id))
+                .map((item) => (
+                  <div key={item.id} className="relative group">
+                    <div className="flex items-center px-3 py-2 rounded-md text-gray-500">
+                      <span className="mr-3">{item.icon}</span>
+                      <span>{item.title}</span>
+                    </div>
+                    <button 
+                      className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => toggleModuleVisibility(item.id)}
+                      title="顯示此模組"
+                    >
+                      <Eye className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+                    </button>
+                  </div>
+                ))}
+            </nav>
+          </div>
+        )}
 
         <div className="mt-auto pt-4 border-t border-gray-200">
           <Button

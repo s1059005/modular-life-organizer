@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ChevronLeft, Menu } from "lucide-react";
@@ -9,6 +9,17 @@ import { Button } from "@/components/ui/button";
 const Layout = () => {
   const isMobile = useIsMobile();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(!isMobile);
+  const location = useLocation();
+
+  // Check if current module is hidden
+  React.useEffect(() => {
+    const hiddenModules = JSON.parse(localStorage.getItem("hiddenModules") || "[]");
+    const currentPath = location.pathname.slice(1); // Remove leading slash
+    
+    // If trying to access a hidden module directly, we still allow it
+    // This is a design decision - modules are just visually hidden in the sidebar
+    // but still accessible by direct URL
+  }, [location]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
