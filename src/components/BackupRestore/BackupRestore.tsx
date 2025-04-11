@@ -19,6 +19,7 @@ const BackupRestore = () => {
       countdowns: localStorage.getItem('countdowns'),
       worldClocks: localStorage.getItem('worldClocks'),
       vocabulary: localStorage.getItem('vocabulary'),
+      stickyNotes: localStorage.getItem('stickyNotes'), // 添加便利貼資料到備份
       version: '1.0.0',
       timestamp: new Date().toISOString()
     };
@@ -76,6 +77,7 @@ const BackupRestore = () => {
         if (backupData.countdowns) localStorage.setItem('countdowns', backupData.countdowns);
         if (backupData.worldClocks) localStorage.setItem('worldClocks', backupData.worldClocks);
         if (backupData.vocabulary) localStorage.setItem('vocabulary', backupData.vocabulary);
+        if (backupData.stickyNotes) localStorage.setItem('stickyNotes', backupData.stickyNotes); // 恢復便利貼資料
         
         toast({
           title: "恢復成功",
