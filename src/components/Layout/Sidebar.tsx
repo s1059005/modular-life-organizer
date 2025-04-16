@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { BookOpenText, CheckSquare, Clock, Globe, X, PlusCircle, BookText, Save, StickyNote, EyeOff, Eye } from "lucide-react";
+import { BookOpenText, CheckSquare, Clock, Globe, X, PlusCircle, BookText, Save, StickyNote, EyeOff, Eye, Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -60,6 +59,13 @@ const navItems: NavItem[] = [
     path: "/vocabulary",
     icon: <BookText className="h-5 w-5" />,
     description: "英文單字學習與測驗"
+  },
+  {
+    id: "password",
+    title: "密碼生成器",
+    path: "/password",
+    icon: <Key className="h-5 w-5" />,
+    description: "生成不同複雜度的安全密碼"
   },
   {
     id: "backup",

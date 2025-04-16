@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +11,7 @@ import WorldClockPage from "./pages/WorldClockPage";
 import VocabularyPage from "./pages/VocabularyPage";
 import BackupRestorePage from "./pages/BackupRestorePage";
 import StickyNotesPage from "./pages/StickyNotesPage";
+import PasswordGeneratorPage from "./pages/PasswordGeneratorPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +32,7 @@ const App = () => (
             <Route path="worldclock" element={<WorldClockPage />} />
             <Route path="vocabulary" element={<VocabularyPage />} />
             <Route path="backup" element={<BackupRestorePage />} />
+            <Route path="password" element={<PasswordGeneratorPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
