@@ -51,11 +51,32 @@ const VocabularyList = ({ items, reviewMode = false, onEdit }: VocabularyListPro
   };
 
   const playWordAudio = (word: string) => {
-    setPlayingAudio(word);
-    const utterance = new SpeechSynthesisUtterance(word);
-    utterance.lang = 'en-US';
-    utterance.onend = () => setPlayingAudio(null);
-    speechSynthesis.speak(utterance);
+    const speak = () => {
+      const voices = speechSynthesis.getVoices();
+      const voice = voices.find(v => v.lang === 'en-US') || null;
+  
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US';
+      if (voice) utterance.voice = voice;
+  
+      setPlayingAudio(word);
+      utterance.onend = () => setPlayingAudio(null);
+  
+      speechSynthesis.speak(utterance);
+    };
+  
+    // 如果語音列表已經存在，直接播放
+    if (speechSynthesis.getVoices().length > 0) {
+      speak();
+    } else {
+      // 如果尚未載入語音，等待 voiceschanged 後再播放一次
+      const handleVoicesChanged = () => {
+        speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+        speak();
+      };
+  
+      speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+    }
   };
 
   const getMasteryLabel = (level: number) => {
